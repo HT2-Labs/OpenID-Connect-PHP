@@ -281,7 +281,7 @@ class OpenIDConnectClient
      * @return string
      *
      */
-    public function getProviderConfigValue($param) {
+    private function getProviderConfigValue($param) {
 
         // If the configuration value is not available, attempt to fetch it from a well known config endpoint
         // This is also known as auto "discovery"
@@ -414,7 +414,8 @@ class OpenIDConnectClient
      * @return mixed
      */
     private function requestTokens($code) {
-        $token_endpoint = $this->getProviderConfigValue("token_endpoint");
+        $token_endpoint = $this->
+		("token_endpoint");
         $token_endpoint_auth_methods_supported = $this->getProviderConfigValue("token_endpoint_auth_methods_supported");
 
         $headers = [];
