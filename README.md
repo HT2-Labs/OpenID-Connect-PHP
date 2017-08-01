@@ -1,3 +1,13 @@
+# HT2 NOTES #
+
+01/08/17 Latest version from jumbojett for sign out (IdP) support
+
+Changes:-
+Works with Laravel session
+Contains the nonce
+New method to store/retrieve the id_token from session (getSessionIdToken(), for logout)
+
+
 PHP OpenID Connect Basic Client
 ========================
 A simple library that allows an application to authenticate a user through the basic OpenID Connect flow.
