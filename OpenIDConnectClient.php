@@ -605,7 +605,11 @@ class OpenIDConnectClient
      * @return mixed
      */
     protected function fetchURL($url, $post_body = null,$headers = array()) {
-
+	if ($post_body == null) {
+	     $client = new \GuzzleHttp\Client();
+             $res = $client->get($url);
+             return (string) $res->getBody();
+	}
 
         // OK cool - then let's create a new cURL resource handle
         $ch = curl_init();
