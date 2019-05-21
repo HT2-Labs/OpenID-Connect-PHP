@@ -570,7 +570,7 @@ class OpenIDConnectClient
 
     }
 
-    public function getUserInfo() {
+    public function getUserInfo($scopeQueryParam = 'schema') {
 
         // Check to see if the attribute is already in memory
         if ($this->userInfo) {
@@ -580,7 +580,7 @@ class OpenIDConnectClient
         $user_info_endpoint = $this->getProviderConfigValue("userinfo_endpoint");
         $schema = 'openid';
 
-        $user_info_endpoint .= "?schema=" . $schema;
+        $user_info_endpoint .= "?" . $scopeQueryParam . "=" . $schema;
 
         //The accessToken has to be send in the Authorization header, so we create a new array with only this header.
         $headers = array("Authorization: Bearer {$this->accessToken}");
