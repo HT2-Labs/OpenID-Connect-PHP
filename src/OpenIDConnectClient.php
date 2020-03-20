@@ -22,6 +22,8 @@
 
 namespace Jumbojett;
 
+use Illuminate\Container\Container;
+
 /**
  *
  * JWT signature verification support by Jonathan Reed <jdreed@mit.edu>
@@ -217,6 +219,11 @@ class OpenIDConnectClient
      * @var string
      */
     private $redirectURL;
+
+    /**
+     * @var \Illuminate\Session\Store
+     */
+    private $session;
 
     private $enc_type = PHP_QUERY_RFC1738;
 
@@ -1627,33 +1634,34 @@ class OpenIDConnectClient
      * Use session to manage a nonce
      */
     protected function startSession() {
-        if (!isset($_SESSION)) {
-            @session_start();
+        if (!isset($this->session)) {
+            $this->session = Container::getInstance()->make('session', []);
         }
     }
 
     protected function commitSession() {
         $this->startSession();
 
-        session_write_close();
+//        Session is managed for us by illuminate
+//        session_write_close();
     }
 
     protected function getSessionKey($key) {
         $this->startSession();
 
-        return $_SESSION[$key];
+        return $this->session->get($key);
     }
 
     protected function setSessionKey($key, $value) {
         $this->startSession();
 
-        $_SESSION[$key] = $value;
+        $this->session->put([$key => $value]);
     }
 
     protected function unsetSessionKey($key) {
         $this->startSession();
 
-        unset($_SESSION[$key]);
+        $this->session->forget($key);
     }
 
     public function setUrlEncoding($curEncoding)
