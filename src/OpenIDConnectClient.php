@@ -1642,8 +1642,8 @@ class OpenIDConnectClient
     protected function commitSession() {
         $this->startSession();
 
-//        Session is managed for us by illuminate
-//        session_write_close();
+      // Session is managed for us by illuminate
+      $this->session->save();
     }
 
     protected function getSessionKey($key) {
