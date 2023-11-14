@@ -3,12 +3,12 @@
     "description": "Bare-bones OpenID Connect client",
     "license": "Apache-2.0",
     "require": {
-        "php": ">=7.3",
+        "php": "^8.0",
         "phpseclib/phpseclib" : "~2.0",
         "ext-json": "*",
         "ext-curl": "*",
-        "illuminate/container": "~6.0",
-        "illuminate/session": "~6.0"
+        "illuminate/container": "~9.0",
+        "illuminate/session": "~9.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",
