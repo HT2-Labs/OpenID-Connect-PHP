@@ -328,10 +328,15 @@ class OpenIDConnectClient
             $this->idToken = $token_json->id_token;
 
             // Save the access token
-            $this->accessToken = $token_json->access_token;
+            if (property_exists($token_json, 'access_token')) {
+                $this->accessToken = $token_json->access_token;
+            } else {
+            // You can log a warning or set it to null/false if it's not expected
+                $this->accessToken = null;
+            }
 
             // If this is a valid claim
-            if ($this->verifyJWTclaims($claims, $token_json->access_token)) {
+            if ($this->verifyJWTclaims($claims, $this->accessToken)) {
 
                 // Clean up the session a little
                 $this->unsetNonce();
