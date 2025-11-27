@@ -331,7 +331,7 @@ class OpenIDConnectClient
             if (property_exists($token_json, 'access_token')) {
                 $this->accessToken = $token_json->access_token;
             } else {
-            // You can log a warning or set it to null/false if it's not expected
+            	//set to null if not found
                 $this->accessToken = null;
             }
 
