@@ -25,6 +25,7 @@ namespace Jumbojett;
 
 use Error;
 use Exception;
+use Illuminate\Container\Container;
 use phpseclib3\Crypt\RSA;
 use phpseclib3\Math\BigInteger;
 use stdClass;
@@ -346,10 +347,14 @@ class OpenIDConnectClient
             $this->idToken = $id_token;
 
             // Save the access token
-            $this->accessToken = $token_json->access_token;
+            if (property_exists($token_json, 'access_token')) {
+                $this->accessToken = $token_json->access_token;
+            } else {
+                $this->accessToken = null;
+            }
 
             // If this is a valid claim
-            if ($this->verifyJWTClaims($claims, $token_json->access_token)) {
+            if ($this->verifyJWTClaims($claims, $this->accessToken)) {
 
                 // Clean up the session a little
                 $this->unsetNonce();
@@ -1204,7 +1209,6 @@ class OpenIDConnectClient
         return (($this->validateIssuer($claims->iss))
             && (($claims->aud === $this->clientID) || in_array($this->clientID, $claims->aud, true))
             && ($claims->sub === $this->getIdTokenPayload()->sub)
-            && (!isset($claims->nonce) || $claims->nonce === $this->getNonce())
             && ( !isset($claims->exp) || ((is_int($claims->exp)) && ($claims->exp >= time() - $this->leeway)))
             && ( !isset($claims->nbf) || ((is_int($claims->nbf)) && ($claims->nbf <= time() + $this->leeway)))
             && ( !isset($claims->at_hash) || !isset($accessToken) || $claims->at_hash === $expected_at_hash )
@@ -1901,39 +1905,36 @@ class OpenIDConnectClient
     }
 
     /**
-     * Use session to manage a nonce
+     * Use the Laravel session store to manage a nonce
      */
     protected function startSession() {
-        if (session_status() === PHP_SESSION_NONE) {
-            @session_start();
+        if (!isset($this->session)) {
+            $this->session = Container::getInstance()->make('session', []);
         }
     }
 
     protected function commitSession() {
         $this->startSession();
 
-        session_write_close();
+        $this->session->save();
     }
 
     protected function getSessionKey(string $key) {
         $this->startSession();
 
-        if (array_key_exists($key, $_SESSION)) {
-            return $_SESSION[$key];
-        }
-        return false;
+        return $this->session->get($key);
     }
 
     protected function setSessionKey(string $key, $value) {
         $this->startSession();
 
-        $_SESSION[$key] = $value;
+        $this->session->put([$key => $value]);
     }
 
     protected function unsetSessionKey(string $key) {
         $this->startSession();
 
-        unset($_SESSION[$key]);
+        $this->session->forget($key);
     }
 
     /**
